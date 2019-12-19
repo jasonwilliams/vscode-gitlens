@@ -36,6 +36,7 @@ export enum CommandContext {
 	CanToggleCodeLens = 'gitlens:canToggleCodeLens',
 	Enabled = 'gitlens:enabled',
 	HasRemotes = 'gitlens:hasRemotes',
+	HasConnectedRemotes = 'gitlens:hasConnectedRemotes',
 	Key = 'gitlens:key',
 	Readonly = 'gitlens:readonly',
 	ViewsCanCompare = 'gitlens:views:canCompare',
