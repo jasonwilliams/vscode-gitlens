@@ -18,6 +18,7 @@ import { GitCommit, GitLogCommit, GitRemote, GitRevision, IssueOrPullRequest, Pu
 import { GitUri } from '../gitUri';
 import { Iterables, Promises, Strings } from '../../system';
 import { ContactPresence } from '../../vsls/vsls';
+import { RemoteProvider } from '../remotes/factory';
 
 const emptyStr = '';
 
@@ -34,7 +35,7 @@ export interface CommitFormatOptions extends FormatOptions {
 	pullRequestOrRemote?: PullRequest | Promises.CancellationError | GitRemote;
 	presence?: ContactPresence;
 	previousLineDiffUris?: { current: GitUri; previous: GitUri | undefined };
-	remotes?: GitRemote[];
+	remotes?: GitRemote<RemoteProvider>[];
 
 	tokenOptions?: {
 		ago?: Strings.TokenOptions;
@@ -465,7 +466,7 @@ export class CommitFormatter extends Formatter<GitCommit, CommitFormatOptions> {
 		return super.fromTemplateCore(this, template, commit, dateFormatOrOptions);
 	}
 
-	static has(template: string, ...tokens: (keyof NonNullable<CommitFormatOptions['tokenOptions']>)[]) {
+	static has(template: string, ...tokens: (keyof NonNullable<CommitFormatOptions['tokenOptions']>)[]): boolean {
 		return super.has<CommitFormatOptions>(template, ...tokens);
 	}
 }

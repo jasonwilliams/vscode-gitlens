@@ -7,7 +7,15 @@ import { ViewFilesLayout } from '../../configuration';
 import { GlyphChars } from '../../constants';
 import { Container } from '../../container';
 import { FileNode, FolderNode } from './folderNode';
-import { CommitFormatter, GitBranch, GitLogCommit, GitRemote, IssueOrPullRequest, PullRequest } from '../../git/git';
+import {
+	CommitFormatter,
+	GitBranch,
+	GitLogCommit,
+	GitRemote,
+	IssueOrPullRequest,
+	PullRequest,
+	RemoteProvider,
+} from '../../git/git';
 import { Arrays, Iterables, Promises, Strings } from '../../system';
 import { ViewWithFiles } from '../viewBase';
 import { ResourceType, ViewNode, ViewRefNode } from './viewNode';
@@ -45,7 +53,7 @@ export class CommitNode extends ViewRefNode<ViewWithFiles> {
 				  })}\${\n\n${GlyphChars.Dash.repeat(2)}\nfootnotes}`,
 			this.commit,
 			{
-				autolinkedIssues: this._details?.autolinkedIssues,
+				autolinkedIssuesOrPullRequests: this._details?.autolinkedIssuesOrPullRequests,
 				dateFormat: Container.config.defaultDateFormat,
 				getBranchAndTagTips: this.getBranchAndTagTips,
 				messageAutolinks: true,
@@ -95,7 +103,7 @@ export class CommitNode extends ViewRefNode<ViewWithFiles> {
 		item.contextValue = `${ResourceType.Commit}${this.branch?.current ? '+current' : ''}${
 			this._details == null
 				? '+details'
-				: `${this._details?.autolinkedIssues != null ? '+autolinks' : ''}${
+				: `${this._details?.autolinkedIssuesOrPullRequests != null ? '+autolinks' : ''}${
 						this._details?.pr != null ? '+pr' : ''
 				  }`
 		}`;
@@ -131,9 +139,11 @@ export class CommitNode extends ViewRefNode<ViewWithFiles> {
 
 	private _details:
 		| {
-				autolinkedIssues: Map<string, IssueOrPullRequest | Promises.CancellationError | undefined> | undefined;
+				autolinkedIssuesOrPullRequests:
+					| Map<string, IssueOrPullRequest | Promises.CancellationError | undefined>
+					| undefined;
 				pr: PullRequest | undefined;
-				remotes: GitRemote[];
+				remotes: GitRemote<RemoteProvider>[];
 		  }
 		| undefined = undefined;
 
@@ -144,13 +154,13 @@ export class CommitNode extends ViewRefNode<ViewWithFiles> {
 		const remote = await Container.git.getRemoteWithApiProvider(remotes);
 		if (remote?.provider == null) return;
 
-		const [autolinkedIssues, pr] = await Promise.all([
+		const [autolinkedIssuesOrPullRequests, pr] = await Promise.all([
 			Container.autolinks.getIssueOrPullRequestLinks(this.commit.message, remote),
 			Container.git.getPullRequestForCommit(this.commit.ref, remote.provider),
 		]);
 
 		this._details = {
-			autolinkedIssues: autolinkedIssues,
+			autolinkedIssuesOrPullRequests: autolinkedIssuesOrPullRequests,
 			pr: pr,
 			remotes: remotes,
 		};

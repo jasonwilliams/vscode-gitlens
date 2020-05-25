@@ -143,7 +143,7 @@ export abstract class Formatter<TItem = any, TOptions extends FormatOptions = Fo
 	static has<TOptions extends FormatOptions>(
 		template: string,
 		...tokens: (keyof NonNullable<TOptions['tokenOptions']>)[]
-	) {
+	): boolean {
 		const token =
 			tokens.length === 1
 				? (tokens[0] as string)
