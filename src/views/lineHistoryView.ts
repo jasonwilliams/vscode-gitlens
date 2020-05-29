@@ -11,7 +11,8 @@ export class LineHistoryView extends ViewBase<LineHistoryTrackerNode> {
 		super('gitlens.views.lineHistory', 'Line History');
 	}
 
-	getRoot() {
+	// eslint-disable-next-line @typescript-eslint/require-await
+	async getRoot() {
 		return new LineHistoryTrackerNode(this);
 	}
 

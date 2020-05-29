@@ -22,7 +22,8 @@ export class SearchView extends ViewBase<SearchNode> {
 		void setCommandContext(CommandContext.ViewsSearchKeepResults, this.keepResults);
 	}
 
-	getRoot() {
+	// eslint-disable-next-line @typescript-eslint/require-await
+	async getRoot() {
 		return new SearchNode(this);
 	}
 
@@ -210,7 +211,7 @@ export class SearchView extends ViewBase<SearchNode> {
 		);
 	}
 
-	private addResults(
+	private async addResults(
 		results: ViewNode,
 		options: {
 			select?: boolean;
@@ -218,7 +219,7 @@ export class SearchView extends ViewBase<SearchNode> {
 			expand?: boolean | number;
 		} = { select: true, expand: true },
 	) {
-		const root = this.ensureRoot();
+		const root = await this.ensureRoot();
 		root.addOrReplace(results, !this.keepResults);
 
 		setImmediate(() => void this.reveal(results, options));

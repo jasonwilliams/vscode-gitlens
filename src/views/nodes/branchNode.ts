@@ -13,8 +13,9 @@ import { MessageNode, ShowMoreNode } from './common';
 import { insertDateMarkers } from './helpers';
 import { PageableViewNode, ResourceType, ViewNode, ViewRefNode } from './viewNode';
 import { RepositoryNode } from './repositoryNode';
+import { CommitsView } from '../commitsView';
 
-export class BranchNode extends ViewRefNode<RepositoriesView> implements PageableViewNode {
+export class BranchNode extends ViewRefNode<RepositoriesView | CommitsView> implements PageableViewNode {
 	static key = ':branch';
 	static getId(repoPath: string, name: string, root: boolean): string {
 		return `${RepositoryNode.getId(repoPath)}${this.key}(${name})${root ? ':root' : ''}`;
@@ -24,7 +25,7 @@ export class BranchNode extends ViewRefNode<RepositoriesView> implements Pageabl
 
 	constructor(
 		uri: GitUri,
-		view: RepositoriesView,
+		view: RepositoriesView | CommitsView,
 		parent: ViewNode,
 		public readonly branch: GitBranch,
 		// Specifies that the node is shown as a root under the repository node
@@ -78,11 +79,11 @@ export class BranchNode extends ViewRefNode<RepositoriesView> implements Pageabl
 				};
 
 				if (this.branch.state.behind) {
-					children.push(new BranchTrackingStatusNode(this.view, this, this.branch, status, 'behind'));
+					children.push(new BranchTrackingStatusNode(this.view as any, this, this.branch, status, 'behind'));
 				}
 
 				if (this.branch.state.ahead) {
-					children.push(new BranchTrackingStatusNode(this.view, this, this.branch, status, 'ahead'));
+					children.push(new BranchTrackingStatusNode(this.view as any, this, this.branch, status, 'ahead'));
 				}
 			}
 
@@ -97,7 +98,7 @@ export class BranchNode extends ViewRefNode<RepositoriesView> implements Pageabl
 				...insertDateMarkers(
 					Iterables.map(
 						log.commits.values(),
-						c => new CommitNode(this.view, this, c, this.branch, getBranchAndTagTips),
+						c => new CommitNode(this.view as any, this, c, this.branch, getBranchAndTagTips),
 					),
 					this,
 				),

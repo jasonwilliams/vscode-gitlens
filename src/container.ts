@@ -16,6 +16,8 @@ import { Logger } from './logger';
 import { StatusBarController } from './statusbar/statusBarController';
 import { GitDocumentTracker } from './trackers/gitDocumentTracker';
 import { GitLineTracker } from './trackers/gitLineTracker';
+import { BranchesView } from './views/branchesView';
+import { CommitsView } from './views/commitsView';
 import { CompareView } from './views/compareView';
 import { FileHistoryView } from './views/fileHistoryView';
 import { LineHistoryView } from './views/lineHistoryView';
@@ -53,6 +55,9 @@ export class Container {
 		context.subscriptions.push((this._keyboard = new Keyboard()));
 		context.subscriptions.push((this._settingsWebview = new SettingsWebview()));
 		context.subscriptions.push((this._welcomeWebview = new WelcomeWebview()));
+
+		context.subscriptions.push((this._branchesView = new BranchesView()));
+		context.subscriptions.push((this._commitsView = new CommitsView()));
 
 		if (config.views.compare.enabled) {
 			context.subscriptions.push((this._compareView = new CompareView()));
@@ -161,6 +166,24 @@ export class Container {
 	private static _codeLensController: GitCodeLensController;
 	static get codeLens() {
 		return this._codeLensController;
+	}
+
+	private static _branchesView: BranchesView | undefined;
+	static get branchesView() {
+		if (this._branchesView === undefined) {
+			this._context.subscriptions.push((this._branchesView = new BranchesView()));
+		}
+
+		return this._branchesView;
+	}
+
+	private static _commitsView: CommitsView | undefined;
+	static get commitsView() {
+		if (this._commitsView === undefined) {
+			this._context.subscriptions.push((this._commitsView = new CommitsView()));
+		}
+
+		return this._commitsView;
 	}
 
 	private static _compareView: CompareView | undefined;

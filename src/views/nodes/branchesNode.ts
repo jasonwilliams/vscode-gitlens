@@ -20,12 +20,12 @@ export class BranchesNode extends ViewNode<RepositoriesView> {
 
 	private _children: ViewNode[] | undefined;
 
-	constructor(uri: GitUri, view: RepositoriesView, parent: ViewNode, public readonly repo: Repository) {
+	constructor(uri: GitUri, view: RepositoriesView, parent: ViewNode, public repo: Repository) {
 		super(uri, view, parent);
 	}
 
 	get id(): string {
-		return BranchesNode.getId(this.repo.path);
+		return BranchesNode.getId(this.uri.repoPath!);
 	}
 
 	async getChildren(): Promise<ViewNode[]> {

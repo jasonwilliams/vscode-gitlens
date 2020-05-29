@@ -6113,6 +6113,26 @@
 					"when": "config.gitlens.views.search.enabled && config.gitlens.views.search.location == gitlens",
 					"contextualTitle": "GitLens",
 					"icon": "images/views/search.svg"
+				},
+				{
+					"id": "gitlens.views.branches:gitlens",
+					"name": "Branches"
+				},
+				{
+					"id": "gitlens.views.commits:gitlens",
+					"name": "Commits"
+				},
+				{
+					"id": "gitlens.views.tags:gitlens",
+					"name": "Tags"
+				},
+				{
+					"id": "gitlens.views.remotes:gitlens",
+					"name": "Remotes"
+				},
+				{
+					"id": "gitlens.views.contributors:gitlens",
+					"name": "Contributors"
 				}
 			],
 			"explorer": [

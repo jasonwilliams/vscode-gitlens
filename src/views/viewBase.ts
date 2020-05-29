@@ -16,19 +16,20 @@ import {
 	TreeViewVisibilityChangeEvent,
 	window,
 } from 'vscode';
-import { configuration } from '../configuration';
-import { Container } from '../container';
-import { Logger } from '../logger';
-import { debug, Functions, log, Promises, Strings } from '../system';
 import { CompareView } from './compareView';
+import { CommitsView } from './commitsView';
+import { configuration } from '../configuration';
+import { GlyphChars } from '../constants';
+import { Container } from '../container';
 import { FileHistoryView } from './fileHistoryView';
 import { LineHistoryView } from './lineHistoryView';
+import { Logger } from '../logger';
 import { PageableViewNode, ViewNode } from './nodes';
 import { RepositoriesView } from './repositoriesView';
 import { SearchView } from './searchView';
-import { GlyphChars } from '../constants';
+import { debug, Functions, log, Promises, Strings } from '../system';
 
-export type View = RepositoriesView | FileHistoryView | LineHistoryView | CompareView | SearchView;
+export type View = CommitsView | RepositoriesView | FileHistoryView | LineHistoryView | CompareView | SearchView;
 export type ViewWithFiles = RepositoriesView | CompareView | SearchView;
 
 export interface TreeViewNodeStateChangeEvent<T> extends TreeViewExpansionEvent<T> {
@@ -127,7 +128,7 @@ export abstract class ViewBase<TRoot extends ViewNode<View>> implements TreeData
 
 	protected abstract get location(): string;
 
-	protected abstract getRoot(): TRoot;
+	protected abstract getRoot(): Promise<TRoot>;
 	protected abstract registerCommands(): void;
 	protected abstract onConfigurationChanged(e: ConfigurationChangeEvent): void;
 
@@ -150,18 +151,18 @@ export abstract class ViewBase<TRoot extends ViewNode<View>> implements TreeData
 		this._title = this._tree.title;
 	}
 
-	protected ensureRoot(force: boolean = false) {
+	protected async ensureRoot(force: boolean = false) {
 		if (this._root == null || force) {
-			this._root = this.getRoot();
+			this._root = await this.getRoot();
 		}
 
 		return this._root;
 	}
 
-	getChildren(node?: ViewNode): ViewNode[] | Promise<ViewNode[]> {
+	async getChildren(node?: ViewNode): Promise<ViewNode[]> {
 		if (node != null) return node.getChildren();
 
-		const root = this.ensureRoot();
+		const root = await this.ensureRoot();
 		return root.getChildren();
 	}
 
@@ -249,7 +250,7 @@ export abstract class ViewBase<TRoot extends ViewNode<View>> implements TreeData
 		try {
 			const node = await this.findNodeCoreBFS(
 				typeof predicate === 'string' ? n => n.id === predicate : predicate,
-				this.ensureRoot(),
+				await this.ensureRoot(),
 				allowPaging,
 				canTraverse,
 				maxDepth,

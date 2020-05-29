@@ -43,10 +43,13 @@ import {
 } from './nodes';
 import { gate } from '../system';
 import { ViewBase } from './viewBase';
+import { CommitsNode } from './nodes/commitsNode';
+import { unknownGitUri } from './nodes/viewNode';
+import { GitUri } from '../git/gitUri';
 
-export class RepositoriesView extends ViewBase<RepositoriesNode> {
+export class BranchesView extends ViewBase<BranchesNode> {
 	constructor() {
-		super('gitlens.views.repositories', 'Repositories');
+		super('gitlens.views.branches', 'Branches');
 	}
 
 	private _onDidChangeAutoRefresh = new EventEmitter<void>();
@@ -54,9 +57,10 @@ export class RepositoriesView extends ViewBase<RepositoriesNode> {
 		return this._onDidChangeAutoRefresh.event;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
 	async getRoot() {
-		return new RepositoriesNode(this);
+		const repoPath = Container.git.getHighlanderRepoPath()!;
+		const repo = await Container.git.getRepository(repoPath);
+		return new BranchesNode(GitUri.fromRepoPath(repoPath), this as any, undefined! as any, repo!);
 	}
 
 	protected get location(): string {

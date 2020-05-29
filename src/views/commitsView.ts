@@ -43,10 +43,11 @@ import {
 } from './nodes';
 import { gate } from '../system';
 import { ViewBase } from './viewBase';
+import { CommitsNode } from './nodes/commitsNode';
 
-export class RepositoriesView extends ViewBase<RepositoriesNode> {
+export class CommitsView extends ViewBase<CommitsNode> {
 	constructor() {
-		super('gitlens.views.repositories', 'Repositories');
+		super('gitlens.views.commits', 'Commits');
 	}
 
 	private _onDidChangeAutoRefresh = new EventEmitter<void>();
@@ -56,7 +57,7 @@ export class RepositoriesView extends ViewBase<RepositoriesNode> {
 
 	// eslint-disable-next-line @typescript-eslint/require-await
 	async getRoot() {
-		return new RepositoriesNode(this);
+		return new CommitsNode(this);
 	}
 
 	protected get location(): string {

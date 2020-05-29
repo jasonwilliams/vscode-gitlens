@@ -20,7 +20,8 @@ export class CompareView extends ViewBase<CompareNode> {
 		void setCommandContext(CommandContext.ViewsCompareKeepResults, this.keepResults);
 	}
 
-	getRoot() {
+	// eslint-disable-next-line @typescript-eslint/require-await
+	async getRoot() {
 		return new CompareNode(this);
 	}
 
@@ -129,13 +130,13 @@ export class CompareView extends ViewBase<CompareNode> {
 		);
 	}
 
-	compareWithSelected(repoPath?: string, ref?: string | NamedRef) {
-		const root = this.ensureRoot();
+	async compareWithSelected(repoPath?: string, ref?: string | NamedRef) {
+		const root = await this.ensureRoot();
 		void root.compareWithSelected(repoPath, ref);
 	}
 
-	selectForCompare(repoPath?: string, ref?: string | NamedRef) {
-		const root = this.ensureRoot();
+	async selectForCompare(repoPath?: string, ref?: string | NamedRef) {
+		const root = await this.ensureRoot();
 		void root.selectForCompare(repoPath, ref);
 	}
 
@@ -167,7 +168,7 @@ export class CompareView extends ViewBase<CompareNode> {
 			await this.show();
 		}
 
-		const root = this.ensureRoot();
+		const root = await this.ensureRoot();
 		root.addOrReplace(results, !this.keepResults);
 
 		setImmediate(() => this.reveal(results, { expand: true, focus: true, select: true }));

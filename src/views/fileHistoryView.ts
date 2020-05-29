@@ -12,7 +12,8 @@ export class FileHistoryView extends ViewBase<FileHistoryTrackerNode | LineHisto
 		super('gitlens.views.fileHistory', 'File History');
 	}
 
-	getRoot() {
+	// eslint-disable-next-line @typescript-eslint/require-await
+	async getRoot() {
 		return this._followCursor ? new LineHistoryTrackerNode(this) : new FileHistoryTrackerNode(this);
 	}
 
@@ -115,10 +116,10 @@ export class FileHistoryView extends ViewBase<FileHistoryTrackerNode | LineHisto
 	}
 
 	async showHistoryForUri(uri: GitUri, baseRef?: string) {
-		this.setCursorFollowing(false);
+		await this.setCursorFollowing(false);
 		this.setEditorFollowing(false);
 
-		const root = this.ensureRoot(true);
+		const root = await this.ensureRoot(true);
 		if (root instanceof FileHistoryTrackerNode) {
 			await root.showHistoryForUri(uri, baseRef);
 		}
@@ -130,11 +131,11 @@ export class FileHistoryView extends ViewBase<FileHistoryTrackerNode | LineHisto
 	}
 
 	private _followCursor: boolean = false;
-	private setCursorFollowing(enabled: boolean) {
+	private async setCursorFollowing(enabled: boolean) {
 		this._followCursor = enabled;
 		void setCommandContext(CommandContext.ViewsFileHistoryCursorFollowing, enabled);
 
-		const root = this.ensureRoot(true);
+		const root = await this.ensureRoot(true);
 		root.setEditorFollowing(this._followEditor);
 		void root.ensureSubscription();
 		void this.refresh(true);

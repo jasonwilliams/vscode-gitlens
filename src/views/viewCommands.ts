@@ -547,14 +547,14 @@ export class ViewCommands {
 	private compareWithSelected(node: ViewRefNode) {
 		if (!(node instanceof ViewRefNode)) return;
 
-		Container.compareView.compareWithSelected(node.repoPath, node.ref);
+		void Container.compareView.compareWithSelected(node.repoPath, node.ref);
 	}
 
 	@debug()
 	private selectForCompare(node: ViewRefNode) {
 		if (!(node instanceof ViewRefNode)) return;
 
-		Container.compareView.selectForCompare(node.repoPath, node.ref);
+		void Container.compareView.selectForCompare(node.repoPath, node.ref);
 	}
 
 	@debug()
