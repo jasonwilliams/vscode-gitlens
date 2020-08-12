@@ -1,5 +1,13 @@
 'use strict';
-import { Command, Disposable, Event, TreeItem, TreeItemCollapsibleState, TreeViewVisibilityChangeEvent } from 'vscode';
+import {
+	Command,
+	Disposable,
+	Event,
+	TreeItem,
+	TreeItem2,
+	TreeItemCollapsibleState,
+	TreeViewVisibilityChangeEvent,
+} from 'vscode';
 import { GitFile } from '../../git/git';
 import { GitUri } from '../../git/gitUri';
 import { Logger } from '../../logger';
@@ -84,6 +92,10 @@ export abstract class ViewNode<TView extends View = View> {
 	}
 
 	abstract getTreeItem(): TreeItem | Promise<TreeItem>;
+
+	resolveTreeItem(item: TreeItem2): TreeItem2 | Promise<TreeItem2> {
+		return item;
+	}
 
 	getCommand(): Command | undefined {
 		return undefined;

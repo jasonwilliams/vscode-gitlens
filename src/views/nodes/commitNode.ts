@@ -1,6 +1,6 @@
 'use strict';
 import * as paths from 'path';
-import { Command, ThemeIcon, TreeItem, TreeItemCollapsibleState } from 'vscode';
+import { Command, MarkdownString, ThemeIcon, TreeItem, TreeItem2, TreeItemCollapsibleState } from 'vscode';
 import { Commands, DiffWithPreviousCommandArgs } from '../../commands';
 import { CommitFileNode } from './commitFileNode';
 import { ViewFilesLayout } from '../../configuration';
@@ -42,20 +42,22 @@ export class CommitNode extends ViewRefNode<ViewWithFiles> {
 
 	private get tooltip() {
 		return CommitFormatter.fromTemplate(
-			this.commit.isUncommitted
-				? `\${author} ${GlyphChars.Dash} \${id}\n\${ago} (\${date})`
-				: `\${author}\${ (email)}\${" via "pullRequest} ${
-						GlyphChars.Dash
-				  } \${id}\${ (tips)}\n\${ago} (\${date})\${\n\nmessage}${this.commit.getFormattedDiffStatus({
-						expand: true,
-						prefix: '\n\n',
-						separator: '\n',
-				  })}\${\n\n${GlyphChars.Dash.repeat(2)}\nfootnotes}`,
+			Container.config.hovers.detailsMarkdownFormat,
+			// this.commit.isUncommitted
+			// 	? `\${author} ${GlyphChars.Dash} \${id}\n\${ago} (\${date})`
+			// 	: `\${author}\${ (email)}\${" via "pullRequest} ${
+			// 			GlyphChars.Dash
+			// 	  } \${id}\${ (tips)}\n\${ago} (\${date})\${\n\nmessage}${this.commit.getFormattedDiffStatus({
+			// 			expand: true,
+			// 			prefix: '\n\n',
+			// 			separator: '\n',
+			// 	  })}\${\n\n${GlyphChars.Dash.repeat(2)}\nfootnotes}`,
 			this.commit,
 			{
 				autolinkedIssuesOrPullRequests: this._details?.autolinkedIssuesOrPullRequests,
 				dateFormat: Container.config.defaultDateFormat,
 				getBranchAndTagTips: this.getBranchAndTagTips,
+				markdown: true,
 				messageAutolinks: true,
 				messageIndent: 4,
 				pullRequestOrRemote: this._details?.pr,
@@ -115,7 +117,7 @@ export class CommitNode extends ViewRefNode<ViewWithFiles> {
 		item.iconPath = this.view.config.avatars
 			? this.commit.getAvatarUri(Container.config.defaultGravatarsStyle)
 			: new ThemeIcon('git-commit');
-		item.tooltip = this.tooltip;
+		// item.tooltip = this.tooltip;
 
 		return item;
 	}
@@ -135,6 +137,25 @@ export class CommitNode extends ViewRefNode<ViewWithFiles> {
 			command: Commands.DiffWithPrevious,
 			arguments: [undefined, commandArgs],
 		};
+	}
+
+	async resolveTreeItem(item: TreeItem2): Promise<TreeItem2> {
+		if (item.tooltip == null) {
+			await this.loadDetails();
+
+			const markdown = new MarkdownString(this.tooltip, true);
+			markdown.isTrusted = true;
+
+			item.tooltip = markdown;
+			item.contextValue = `${ResourceType.Commit}${this.branch?.current ? '+current' : ''}${
+				this._details == null
+					? '+details'
+					: `${this._details?.autolinkedIssuesOrPullRequests != null ? '+autolinks' : ''}${
+							this._details?.pr != null ? '+pr' : ''
+					  }`
+			}`;
+		}
+		return item;
 	}
 
 	private _details:
@@ -169,6 +190,6 @@ export class CommitNode extends ViewRefNode<ViewWithFiles> {
 		// Add autolinks action to open a quickpick to pick the autolink
 		// Add pr action to open the pr
 
-		void this.triggerChange();
+		// void this.triggerChange();
 	}
 }
